@@ -1,7 +1,7 @@
 ---
 name: Feature
 about: An issue that contains some sub issues
-title: ''
+title: "✨ New Feature"
 labels: ''
 assignees: ''
 
