@@ -3,6 +3,7 @@ using Jarvis.Common.Shared.Utils.SqlUtils;
 using Microsoft.Extensions.Logging.Abstractions;
 using SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2;
 using SemanticKernel.Orchestration.Configuration;
+using SemanticKernel.Orchestration.Orchestrators;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -20,9 +21,9 @@ public class SqlHelperTests
     }
     private SqlServerSchemaAssistant _sut;
 
-    public SqlHelperTests()
+    public SqlHelperTests(KernelStore kernelStore)
     {
-        _sut = new SqlServerSchemaAssistant();
+        _sut = new SqlServerSchemaAssistant(kernelStore);
         _sut.InitializeWithSharedState(new SqlServerSharedState());
     }
 

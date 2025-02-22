@@ -17,11 +17,11 @@ public static class Program
         IServiceCollection serviceCollection = new ServiceCollection();
 
         // Test with GPT4o
-        var gpt4oBuilder = SemanticKernelConfigurator
+        var gpt4oBuilder = Configuration.SemanticKernelConfigurator
             .CreateBasicKernelBuilderGpt4o();
 
         // Test with GPT4 Mini
-        var gpt4MiniBuilder = SemanticKernelConfigurator
+        var gpt4MiniBuilder = Configuration.SemanticKernelConfigurator
             .CreateBasicKernelBuilderGpt4Mini();
 
         // register the interceptors you want to use, register the
@@ -66,12 +66,15 @@ public static class Program
         serviceCollection.AddKeyedTransient<SqlServerSchemaAssistant>("sql");
         serviceCollection.AddKeyedTransient<SqlServerQueryExecutor>("sql");
         serviceCollection.AddKeyedTransient<SqlServerAssistant>("sql");
+        serviceCollection.AddKeyedTransient<ExcelAssistant>("sql");
         serviceCollection.AddKeyedTransient("sql", (sp, key) =>
         {
             var abo = new AssistantBasedOrchestrator(sp.GetRequiredService<KernelStore>());
             var allSqlAssistants = sp.GetRequiredKeyedService<SqlServerAssistant>("sql");
             abo.AddAssistant(allSqlAssistants);
             abo.AddAssistant(new AudioVideoAssistant());
+            var excelAssistant = sp.GetRequiredKeyedService<ExcelAssistant>("sql");
+            abo.AddAssistant(excelAssistant);
             return abo;
         });
 
@@ -149,6 +152,17 @@ public static class Program
         using var scope = kernelStore.StartContainerScope();
         while (true)
         {
+            var tokenUsageCounter = kernelStore.GetInterceptor<TokenUsageCounter>();
+            if (tokenUsageCounter != null)
+            {
+                var usagePrinter = new TokenUsagePrinter(new Dictionary<string, (decimal, decimal)>
+                {
+                    { "gpt-4o", (2.39924m / 1_000_000, 9.5970m / 1_000_000) },           // GPT-4o
+                    { "gpt-4o-mini", (00.14396m / 1_000_000, 0.5759m / 1_000_000) }         // GPT-4o Mini
+                });
+                tokenUsageCounter.SetUsagePrinter(usagePrinter);
+            }
+
             Console.Write("\nAsk a question (press Enter or type 'exit' to quit): ");
             var question = Console.ReadLine();
 
@@ -203,11 +217,12 @@ public static class Program
         IConversation? conversation = null)
     {
         var tokenCounter = kernelStore.GetInterceptor<TokenUsageCounter>();
-        var usagePrinter = new TokenUsagePrinter(tokenCounter, new Dictionary<string, (decimal, decimal)>
+        var usagePrinter = new TokenUsagePrinter(new Dictionary<string, (decimal, decimal)>
         {
             { "gpt-4o", (2.39924m/1_000_000, 9.5970m/1_000_000) },           // GPT-4o
             { "gpt-4o-mini", (00.14396m/1_000_000, 0.5759m/1_000_000) }         // GPT-4o Mini
         });
+        tokenCounter.SetUsagePrinter(usagePrinter);
 
         var assistant = new SimpleChatAssistant("gpt4omini", kernelStore, conversation);
         while (true)
@@ -232,9 +247,6 @@ public static class Program
 
             var response = await assistant.SendMessageAsync(userInput);
             Console.WriteLine("\nAssistant: " + response);
-
-            var usageReport = usagePrinter.GetUsageReport();
-            Console.WriteLine(usageReport.FormattedReport);
         }
     }
 }

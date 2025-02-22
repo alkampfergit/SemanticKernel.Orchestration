@@ -1,5 +1,6 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using SemanticKernel.Orchestration.Orchestrators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -67,6 +68,7 @@ public abstract class BaseAssistant : IConversationOrchestrator
             throw new ArgumentException($"Function {function} not found");
         }
 
+        Console.WriteLine($"Executing function {function}");
         var functionInfo = _functions[function];
         return await functionInfo.Function(arguments);
     }
