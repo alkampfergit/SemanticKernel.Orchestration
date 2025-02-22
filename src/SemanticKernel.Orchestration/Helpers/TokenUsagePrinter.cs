@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace SemanticKernel.Orchestration.Helpers;
 
@@ -13,17 +14,19 @@ public record TokenUsageReport(
 public class TokenUsagePrinter
 {
     private readonly Dictionary<string, (decimal InputCost, decimal OutputCost)> _modelCosts;
+    private readonly ILogger<TokenUsagePrinter> _logger;
 
     public TokenUsagePrinter(
         Dictionary<string, (decimal InputCost, decimal OutputCost)>? modelCosts = null)
     {
         _modelCosts = modelCosts ?? new Dictionary<string, (decimal, decimal)>();
+        _logger = SemanticOrchestratorLoggerFactory.Create<TokenUsagePrinter>();
     }
 
     public void Print(TokenUsageCounter tokenUsageCounter)
     {
         var report = GetUsageReport(tokenUsageCounter);
-        Console.WriteLine(report.FormattedReport);
+        _logger.LogInformation(report.FormattedReport);
     }
 
     public TokenUsageReport GetUsageReport(TokenUsageCounter tokenUsageCounter)
