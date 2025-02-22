@@ -1,4 +1,4 @@
-﻿namespace SemanticKernel.Orchestration.Configuration;
+﻿namespace SemanticKernel.Orchestration.SampleAgents.SqlServer;
 
 public class SqlServerConfiguration
 {

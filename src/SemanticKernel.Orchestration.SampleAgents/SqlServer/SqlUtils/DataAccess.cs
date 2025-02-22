@@ -1,14 +1,12 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Text;
 
-namespace Jarvis.Common.Shared.Utils.SqlUtils
+namespace SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils
 {
     public static class DataAccess
     {
@@ -553,12 +551,12 @@ namespace Jarvis.Common.Shared.Utils.SqlUtils
 
         public static T ToSafeValue<T>(this IDataReader reader, string columnName)
         {
-            return reader[columnName] is DBNull ? default(T) : (T)reader[columnName];
+            return reader[columnName] is DBNull ? default : (T)reader[columnName];
         }
 
         public static T ToSafeValue<T>(this IDataRecord reader, string columnName)
         {
-            return reader[columnName] is DBNull ? default(T) : (T)reader[columnName];
+            return reader[columnName] is DBNull ? default : (T)reader[columnName];
         }
 
         #endregion

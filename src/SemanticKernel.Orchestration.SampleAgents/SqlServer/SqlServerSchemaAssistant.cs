@@ -1,16 +1,11 @@
-﻿using Jarvis.Common.Shared.Utils.SqlUtils;
-using Microsoft.Data.SqlClient;
-using Microsoft.SemanticKernel;
-using SemanticKernel.Orchestration.Helpers.SqlUtils;
+﻿using Microsoft.SemanticKernel;
+using SemanticKernel.Orchestration.Assistants;
 using SemanticKernel.Orchestration.Orchestrators;
-using System;
-using System.Collections.Generic;
+using SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2;
+namespace SemanticKernel.Orchestration.SampleAgents.SqlServer;
 
 public class SqlServerSchemaAssistant : BaseAssistant, IConversationOrchestrator
 {
@@ -76,7 +71,7 @@ public class SqlServerSchemaAssistant : BaseAssistant, IConversationOrchestrator
     [Description("Get schema of tables of a database if you need the schema to answer a user question")]
     public async Task<AssistantResponse> GetTableSchemaRepresentation(
         [Description("Name of the database")] string databaseName,
-        [Description("The question of the user regarding the schema")]string userQuestion)
+        [Description("The question of the user regarding the schema")] string userQuestion)
     {
         if (!_sharedState.SchemaState.DatabaseSchema.TryGetValue(databaseName, out var databaseSchema))
         {
@@ -93,7 +88,7 @@ question: {userQuestion}
 SCHEMA:
 {databaseSchema.ToPrompt()}");
 
-        return new AssistantResponse(answer.ToString(), TerminateCycle:true);   
+        return new AssistantResponse(answer.ToString(), TerminateCycle: true);
     }
 
     [Description("Query the database for table schema if you didn't already loaded")]

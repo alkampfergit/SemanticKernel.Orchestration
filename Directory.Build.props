@@ -6,6 +6,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
         <RollForward>LatestMajor</RollForward>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <WarningsAsMessages>$(WarningsAsMessages);CS1591</WarningsAsMessages>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

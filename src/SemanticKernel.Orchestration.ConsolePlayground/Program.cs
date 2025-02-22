@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SemanticKernel.Orchestration.Assistants;
 using SemanticKernel.Orchestration.Assistants.BaseAssistants;
-using SemanticKernel.Orchestration.Assistants.SampleAssistantDemo1;
-using SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2;
-using SemanticKernel.Orchestration.Configuration;
+using SemanticKernel.Orchestration.ConsolePlayground.SampleAgentsDemo;
 using SemanticKernel.Orchestration.Helpers;
 using SemanticKernel.Orchestration.Orchestrators;
-using SemanticKernelExperiments.AudioVideoPlugin;
+using SemanticKernel.Orchestration.SampleAgents.AudioVideo;
+using SemanticKernel.Orchestration.SampleAgents.SqlServer;
 
 namespace SemanticKernel.Orchestration.ConsolePlayground;
 

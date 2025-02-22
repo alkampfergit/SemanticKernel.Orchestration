@@ -1,12 +1,9 @@
-using OpenAI.Images;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using static SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2.SqlServerQueryExecutor;
-using static SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2.SqlServerSchemaAssistant;
+using static SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlServerQueryExecutor;
+using static SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlServerSchemaAssistant;
 
-namespace SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2;
+namespace SemanticKernel.Orchestration.SampleAgents.SqlServer;
 
 public class SqlServerSharedState
 {

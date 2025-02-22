@@ -162,7 +162,7 @@ public class KernelStore
         _currentContainer.Value = null;
     }
 
-    internal static void SetProperty(string propertyName, object value)
+    public static void SetProperty(string propertyName, object value)
     {
         var container = _currentContainer.Value;
         if (container == null)
@@ -174,7 +174,7 @@ public class KernelStore
         container.Properties[propertyName] = value;
     }
 
-    internal static IReadOnlyCollection<(string Key, T Value)> GetAllPropertyValues<T>() where T : class
+    public static IReadOnlyCollection<(string Key, T Value)> GetAllPropertyValues<T>() where T : class
     {
         var container = _currentContainer.Value;
         if (container == null)

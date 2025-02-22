@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
-using Jarvis.Common.Shared.Utils.SqlUtils;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2;
-using SemanticKernel.Orchestration.Configuration;
 using SemanticKernel.Orchestration.Orchestrators;
+using SemanticKernel.Orchestration.SampleAgents.SqlServer;
+using SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
-using static SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2.SqlServerSchemaAssistant;
+using static SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlServerSchemaAssistant;
 
 namespace SemanticKernel.Orchestration.Tests.HelperTests;
 
@@ -20,9 +20,14 @@ public class SqlHelperTests
         DataAccess.SetConnectionString(config.ConnectionString, "Microsoft.Data.SqlClient", NullLogger.Instance);
     }
     private SqlServerSchemaAssistant _sut;
+    private ServiceCollection _serviceCollection;
+    private ServiceProvider _serviceProvider;
 
-    public SqlHelperTests(KernelStore kernelStore)
+    public SqlHelperTests()
     {
+        _serviceCollection = new ServiceCollection();
+        _serviceProvider = _serviceCollection.BuildServiceProvider();
+        KernelStore kernelStore = new KernelStore(_serviceProvider);
         _sut = new SqlServerSchemaAssistant(kernelStore);
         _sut.InitializeWithSharedState(new SqlServerSharedState());
     }

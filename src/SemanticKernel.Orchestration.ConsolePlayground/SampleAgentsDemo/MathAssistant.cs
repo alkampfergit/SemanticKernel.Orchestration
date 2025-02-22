@@ -1,10 +1,9 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using System;
+using SemanticKernel.Orchestration.Assistants;
 using System.ComponentModel;
-using System.Threading.Tasks;
 
-namespace SemanticKernel.Orchestration.Assistants.SampleAssistantDemo1;
+namespace SemanticKernel.Orchestration.ConsolePlayground.SampleAgentsDemo;
 
 public class MathAssistant : BaseAssistant
 {
@@ -29,7 +28,7 @@ public class MathAssistant : BaseAssistant
             var resultDouble = Convert.ToDouble(result);
 
             var propertyName = $"expression{count++}";
-            base._orchestrator.AddProperty(propertyName, resultDouble.ToString());
+            _orchestrator.AddProperty(propertyName, resultDouble.ToString());
             var expressionResult = new ExpressionResult(propertyName, expression, resultDouble);
             return new AssistantResponse(
                 $"Result of {expression} is in property {propertyName} and it is equal to {resultDouble}",

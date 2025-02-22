@@ -1,14 +1,10 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using SemanticKernel.Orchestration.Assistants;
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace SemanticKernelExperiments.AudioVideoPlugin;
+namespace SemanticKernel.Orchestration.SampleAgents.AudioVideo;
 
 public class AudioVideoAssistant : BaseAssistant
 {
@@ -91,7 +87,7 @@ public class AudioVideoAssistant : BaseAssistant
             string transcription = File.ReadAllText(textFile);
             SetLocalProperty("transcription", transcription);
             SetGlobalProperty("transcription", transcription);
-            return new AssistantResponse("transcription done", new State( "Transcribe", audiofile, ""));
+            return new AssistantResponse("transcription done", new State("Transcribe", audiofile, ""));
         }
         finally
         {

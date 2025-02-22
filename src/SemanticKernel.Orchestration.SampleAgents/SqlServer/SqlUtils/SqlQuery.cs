@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Jarvis.Common.Shared.Utils.SqlUtils
+namespace SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils
 {
     public class SqlQuery
     {

@@ -1,16 +1,13 @@
-﻿using Jarvis.Common.Shared.Utils.SqlUtils;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
+using SemanticKernel.Orchestration.Assistants;
 using SemanticKernel.Orchestration.Helpers;
-using SemanticKernel.Orchestration.Helpers.SqlUtils;
 using SemanticKernel.Orchestration.Orchestrators;
-using System.Collections.Generic;
+using SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils;
 using System.ComponentModel;
 using System.Data;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2;
+namespace SemanticKernel.Orchestration.SampleAgents.SqlServer;
 
 public class SqlServerQueryExecutor : BaseAssistant, IConversationOrchestrator
 {

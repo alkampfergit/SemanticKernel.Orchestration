@@ -1,20 +1,16 @@
-﻿using Jarvis.Common.Shared.Utils.SqlUtils;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using SemanticKernel.Orchestration.Configuration;
+using SemanticKernel.Orchestration.Assistants;
 using SemanticKernel.Orchestration.Helpers;
 using SemanticKernel.Orchestration.Orchestrators;
-using System;
-using System.Collections.Generic;
+using SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2;
+
+namespace SemanticKernel.Orchestration.SampleAgents.SqlServer;
 
 /// <summary>
 /// This is a complex assistant, that uses other assistants to perform some
@@ -56,7 +52,7 @@ public class SqlServerAssistant : BaseAssistant
             async (args) => await ExcuteDatabaseOperation(args["operationToExecute"].ToString()!));
     }
 
-    internal override void SetOrchestrator(IConversationOrchestrator orchestrator)
+    public override void SetOrchestrator(IConversationOrchestrator orchestrator)
     {
         base.SetOrchestrator(orchestrator);
         _sqlServerQueryExecutor.SetOrchestrator(orchestrator);

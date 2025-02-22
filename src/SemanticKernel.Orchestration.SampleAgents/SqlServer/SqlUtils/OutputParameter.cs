@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Jarvis.Common.Shared.Utils.SqlUtils
+﻿namespace SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils
 {
     internal class OutputParameter
     {
