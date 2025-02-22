@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SemanticKernel.Orchestration.Assistants.BaseAssistants;
 
-internal class SummaryAssistant : BaseAssistant
+public class SummaryAssistant : BaseAssistant
 {
     private readonly KernelStore _kernelStore;
 

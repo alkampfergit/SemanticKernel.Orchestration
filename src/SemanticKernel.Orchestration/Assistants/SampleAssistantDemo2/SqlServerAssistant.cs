@@ -20,7 +20,7 @@ namespace SemanticKernel.Orchestration.Assistants.SampleAssistantDemo2;
 /// This is a complex assistant, that uses other assistants to perform some
 /// work.
 /// </summary>
-internal class SqlServerAssistant : BaseAssistant
+public class SqlServerAssistant : BaseAssistant
 {
     private readonly KernelStore _kernelStore;
     private readonly SqlServerSchemaAssistant _sqlServerSchemaAssistant;

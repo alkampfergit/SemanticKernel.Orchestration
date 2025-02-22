@@ -157,12 +157,12 @@ public class KernelStore
         return _currentContainer.Value;
     }
 
-    internal static void ClearContainer()
+    public static void ClearContainer()
     {
         _currentContainer.Value = null;
     }
 
-    internal T? GetInterceptor<T>() where T : class
+    public T? GetInterceptor<T>() where T : class
     {
         var container = _currentContainer.Value;
         if (container == null)

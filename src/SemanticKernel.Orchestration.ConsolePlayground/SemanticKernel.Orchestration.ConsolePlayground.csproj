@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
-    <nullable>enable</nullable>
-    <RootNamespace>SemanticKernel.Orchestration</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  
   </PropertyGroup>
 
     <ItemGroup>
@@ -28,5 +29,10 @@
       <PackageReference Include="Spectre.Console" />
       <PackageReference Include="System.Configuration.ConfigurationManager" />
     </ItemGroup>
+    
+  <ItemGroup>
+    <ProjectReference Include="..\SemanticKernel.Orchestration.SampleAgents\SemanticKernel.Orchestration.SampleAgents.csproj" />
+    <ProjectReference Include="..\SemanticKernel.Orchestration\SemanticKernel.Orchestration.csproj" />
+  </ItemGroup>
 
-  </Project>
+</Project>
