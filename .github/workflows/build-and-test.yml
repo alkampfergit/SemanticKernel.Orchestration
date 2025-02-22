@@ -1,0 +1,59 @@
+name: BuildAndPublish
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - feature/*
+      - hotfix/*
+      - release/*
+  pull_request: 
+
+permissions:
+  id-token: write
+  contents: read
+  attestations: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    services:
+      elasticsearch:
+        image: mcr.microsoft.com/mssql/server:latest
+        ports:
+          - 1433:1433
+       
+    steps:
+      
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup dotnet 3
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+
+      - name: Setup dotnet 8
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 9.x
+
+      - name: build and publish
+        shell: pwsh
+        run: |
+          ./build.ps1 -nugetPublish $false
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: 'artifacts/NuGet'
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts/NuGet
