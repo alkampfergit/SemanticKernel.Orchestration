@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using SemanticKernel.Orchestration.Helpers;
 using SemanticKernel.Orchestration.Orchestrators;
 using SemanticKernel.Orchestration.SampleAgents.SqlServer;
 using SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils;
@@ -26,11 +28,14 @@ public class SqlHelperTests
         DataAccess.SetConnectionString(connectionString, "Microsoft.Data.SqlClient", NullLogger.Instance);
     }
     private SqlServerSchemaAssistant _sut;
+    private NullLoggerFactory _loggerFactory;
     private ServiceCollection _serviceCollection;
     private ServiceProvider _serviceProvider;
 
     public SqlHelperTests()
     {
+        _loggerFactory = NullLoggerFactory.Instance;
+        SemanticOrchestratorLoggerFactory.Init(_loggerFactory);
         _serviceCollection = new ServiceCollection();
         _serviceProvider = _serviceCollection.BuildServiceProvider();
         KernelStore kernelStore = new KernelStore(_serviceProvider);
