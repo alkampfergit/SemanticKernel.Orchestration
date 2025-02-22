@@ -1,15 +1,16 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using SemanticKernel.Orchestration.Orchestrators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SemanticKernel.Orchestration.Assistants;
 
 /// <summary>
-/// An assistant is capable of interacting with the kernel 
+/// An assistant is capable of interacting with the kernel
 /// and orchestrating stuff.
 /// </summary>
 public abstract class BaseAssistant : IConversationOrchestrator
@@ -19,10 +20,29 @@ public abstract class BaseAssistant : IConversationOrchestrator
 
     private readonly Dictionary<string, FunctionInfo> _functions = new(StringComparer.OrdinalIgnoreCase);
 
-    protected IConversationOrchestrator _orchestrator;
+    protected IConversationOrchestrator? _orchestrator;
 
-    public record FunctionInfo(string Name, KernelFunction KernelFunction, Func<IDictionary<string, object>, Task<AssistantResponse>> Function, bool IsFinal);
+    /// <summary>
+    /// Contains information about a function that can be executed by the current
+    /// orchestrator.
+    /// </summary>
+    /// <param name="Name"></param>
+    /// <param name="KernelFunction"></param>
+    /// <param name="Function"></param>
+    /// <param name="IsFinal"></param>
+    /// <param name="CanBeExecuted"></param>
+    public record FunctionInfo(
+        string Name,
+        KernelFunction KernelFunction,
+        Func<IDictionary<string, object>,
+        Task<AssistantResponse>> Function,
+        bool IsFinal,
+        Func<CancellationToken, Task<bool>> CanBeExecuted);
 
+    /// <summary>
+    /// Create an assistant you must give the name
+    /// </summary>
+    /// <param name="name"></param>
     public BaseAssistant(string name)
     {
         _name = name;
@@ -32,18 +52,25 @@ public abstract class BaseAssistant : IConversationOrchestrator
 
     public virtual string InjectedPrompt => string.Empty;
 
+    /// <summary>
+    /// Set the orchestrator this agent refers to.
+    /// </summary>
+    /// <param name="orchestrator"></param>
     public virtual void SetOrchestrator(IConversationOrchestrator orchestrator)
     {
         _orchestrator = orchestrator;
     }
 
+    private static Task<bool> _canExecute(CancellationToken _) => Task.FromResult(true);
+
     protected void RegisterFunctionDelegate(
         string functionName,
         KernelFunction kernelFunction,
         Func<IDictionary<string, object>, Task<AssistantResponse>> function,
-        bool isFinal = false)
+        bool isFinal = false,
+        Func<CancellationToken, Task<bool>>? canExecute = null)
     {
-        _functions[functionName] = new FunctionInfo(functionName, kernelFunction, function, isFinal);
+        _functions[functionName] = new FunctionInfo(functionName, kernelFunction, function, isFinal, canExecute ?? _canExecute);
     }
 
     public virtual void AddResultToPrompt(ChatHistory chatHistory, AssistantResponse agentOperationResult)
@@ -56,9 +83,17 @@ public abstract class BaseAssistant : IConversationOrchestrator
         return agentOperationResult.Result;
     }
 
-    public IReadOnlyCollection<FunctionInfo> GetFunctions()
+    public async Task<IReadOnlyCollection<FunctionInfo>> GetFunctionsAsync(CancellationToken cancellationToken = default)
     {
-        return _functions.Values;
+        var functions = new List<FunctionInfo>();
+        foreach (var function in _functions.Values)
+        {
+            if (await function.CanBeExecuted(cancellationToken))
+            {
+                functions.Add(function);
+            }
+        }
+        return functions;
     }
 
     public async Task<AssistantResponse> ExecuteFunctionAsync(string function, IDictionary<string, object> arguments)
@@ -68,9 +103,14 @@ public abstract class BaseAssistant : IConversationOrchestrator
             throw new ArgumentException($"Function {function} not found");
         }
 
-        Console.WriteLine($"Executing function {function}");
+        Console.WriteLine($"Executing function {function} with parameters: {DumpArguments(arguments)}");
         var functionInfo = _functions[function];
         return await functionInfo.Function(arguments);
+    }
+
+    private object DumpArguments(IDictionary<string, object> arguments)
+    {
+        return string.Join(", ", arguments.Select(kv => $"{kv.Key}={kv.Value}"));
     }
 
     public virtual string GetAssistantProperty(string propertyName)

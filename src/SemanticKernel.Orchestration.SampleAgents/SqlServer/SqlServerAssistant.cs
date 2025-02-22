@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -19,6 +20,7 @@ namespace SemanticKernel.Orchestration.SampleAgents.SqlServer;
 public class SqlServerAssistant : BaseAssistant
 {
     private readonly KernelStore _kernelStore;
+    private readonly ILogger<SqlServerAssistant> _logger;
     private readonly SqlServerSchemaAssistant _sqlServerSchemaAssistant;
     private readonly SqlServerQueryExecutor _sqlServerQueryExecutor;
     private readonly SqlServerSharedState _sharedState;
@@ -30,11 +32,13 @@ public class SqlServerAssistant : BaseAssistant
        IUserQuestionManager userQuestionManager,
        KernelStore kernelStore,
        SqlServerConfiguration sqlServerConfiguration,
+       ILogger<SqlServerAssistant> logger,  
        [FromKeyedServices("sql")] SqlServerSchemaAssistant sqlServerSchemaAssistant,
        [FromKeyedServices("sql")] SqlServerQueryExecutor sqlServerQueryExecutor) : base("SqlServerAssistant")
     {
         _sharedState = new SqlServerSharedState();
         _kernelStore = kernelStore;
+        _logger = logger;
         _sqlServerSchemaAssistant = sqlServerSchemaAssistant;
         _sqlServerQueryExecutor = sqlServerQueryExecutor;
         _subAssistants["schema"] = sqlServerSchemaAssistant;
@@ -81,7 +85,8 @@ If the question regards databases and you do not have information in the FACTS, 
             Dictionary<string, BaseAssistant> assistantMap = new();
             foreach (var subAssistant in _subAssistants.Values)
             {
-                foreach (var function in subAssistant.GetFunctions())
+                var assistantFunctions = await subAssistant.GetFunctionsAsync(CancellationToken.None);
+                foreach (var function in assistantFunctions)
                 {
                     functions.Add(function.KernelFunction);
                     assistantMap[function.Name] = subAssistant;
@@ -105,19 +110,22 @@ If the question regards databases and you do not have information in the FACTS, 
 
             //ChatMessageContent result = await PerformCallWithChatModel(question, kernel, settings, cancellationToken);
             ChatMessageContent result = await PerformCallWithSimplePromptModel(operationToExecute, kernel, settings, CancellationToken.None);
-
-            var response = result.Items.OfType<FunctionCallContent>().SingleOrDefault();
-            if (response == null)
+            var functionResponses = result.Items.OfType<FunctionCallContent>().ToList();
+            if (functionResponses.Count == 0)
             {
                 return result.ToString();
             }
 
-            var assistant = assistantMap[response.FunctionName];
-            var assistantFunctionCallResult = await assistant.ExecuteFunctionAsync(response.FunctionName, response.Arguments);
-
-            if (finalFunctions.Contains(response.FunctionName) || assistantFunctionCallResult.TerminateCycle)
+            foreach (var response in functionResponses)
             {
-                return assistantFunctionCallResult;
+                //TODO: MAnage multiple call results.
+                var assistant = assistantMap[response.FunctionName];
+                var assistantFunctionCallResult = await assistant.ExecuteFunctionAsync(response.FunctionName, response.Arguments);
+
+                if (finalFunctions.Contains(response.FunctionName) || assistantFunctionCallResult.TerminateCycle)
+                {
+                    return assistantFunctionCallResult;
+                }
             }
         }
     }

@@ -27,6 +27,7 @@
       <PackageReference Include="Microsoft.SemanticKernel.Abstractions" />
       <PackageReference Include="Microsoft.SemanticKernel.Core" />
       <PackageReference Include="NCalcAsync" />
+      <PackageReference Include="Serilog" />
       <PackageReference Include="Spectre.Console" />
       <PackageReference Include="System.Configuration.ConfigurationManager" />
     </ItemGroup>

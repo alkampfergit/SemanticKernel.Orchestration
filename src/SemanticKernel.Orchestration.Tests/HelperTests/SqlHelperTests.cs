@@ -42,7 +42,7 @@ public class SqlHelperTests
     [Fact]
     public async Task Can_query_table_list()
     {
-        var dbList = await _sut.RetrieveTableSchema("northwind");
+        var dbList = await _sut.RetrieveDatabaseSchema("northwind");
         dbList.State.Should().BeOfType<DatabaseSchema>();
 
         var dbSchema = dbList.State as DatabaseSchema;

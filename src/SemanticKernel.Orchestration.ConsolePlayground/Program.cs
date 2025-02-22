@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using System.IO;
 using SemanticKernel.Orchestration.Assistants;
 using SemanticKernel.Orchestration.Assistants.BaseAssistants;
 using SemanticKernel.Orchestration.ConsolePlayground.SampleAgentsDemo;
@@ -13,7 +16,25 @@ public static class Program
 {
     static async Task Main(string[] args)
     {
+        // Configure Serilog
+        var logPath = Path.Combine(AppContext.BaseDirectory, "Logs", "app-.log");
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.Console()
+            .WriteTo.File(logPath,
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 10,
+                fileSizeLimitBytes: 20 * 1024 * 1024) // 20MB
+            .CreateLogger();
+
         IServiceCollection serviceCollection = new ServiceCollection();
+
+        // Add Serilog to .NET Core logging pipeline
+        serviceCollection.AddLogging(builder =>
+        {
+            builder.ClearProviders();
+            builder.AddSerilog(dispose: true);
+        });
 
         // Test with GPT4o
         var gpt4oBuilder = Configuration.SemanticKernelConfigurator
@@ -40,7 +61,9 @@ public static class Program
 
         serviceCollection.AddTransient(sp =>
         {
-            var abo = new AssistantBasedOrchestrator(sp.GetRequiredService<KernelStore>());
+            var abo = new AssistantBasedOrchestrator(
+                sp.GetRequiredService<KernelStore>(),
+                sp.GetRequiredService<ILogger<AssistantBasedOrchestrator>>());
             abo.AddAssistant(new MathAssistant());
             return abo;
         });
@@ -51,7 +74,9 @@ public static class Program
 
         serviceCollection.AddKeyedTransient("audiovideo", (sp, key) =>
         {
-            var abo = new AssistantBasedOrchestrator(sp.GetRequiredService<KernelStore>());
+            var abo = new AssistantBasedOrchestrator(
+                sp.GetRequiredService<KernelStore>(),
+                sp.GetRequiredService<ILogger<AssistantBasedOrchestrator>>());
             var summaryAssistant = sp.GetRequiredKeyedService<SummaryAssistant>("audiovideo");
             abo.AddAssistant(summaryAssistant);
             abo.AddAssistant(new AudioVideoAssistant());
@@ -68,7 +93,9 @@ public static class Program
         serviceCollection.AddKeyedTransient<ExcelAssistant>("sql");
         serviceCollection.AddKeyedTransient("sql", (sp, key) =>
         {
-            var abo = new AssistantBasedOrchestrator(sp.GetRequiredService<KernelStore>());
+            var abo = new AssistantBasedOrchestrator(
+                sp.GetRequiredService<KernelStore>(),
+                sp.GetRequiredService<ILogger<AssistantBasedOrchestrator>>());
             var allSqlAssistants = sp.GetRequiredKeyedService<SqlServerAssistant>("sql");
             abo.AddAssistant(allSqlAssistants);
             abo.AddAssistant(new AudioVideoAssistant());
