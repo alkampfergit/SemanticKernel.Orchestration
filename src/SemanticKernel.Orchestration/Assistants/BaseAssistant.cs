@@ -1,5 +1,7 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using SemanticKernel.Orchestration.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +18,8 @@ namespace SemanticKernel.Orchestration.Assistants;
 public abstract class BaseAssistant : IConversationOrchestrator
 {
     private readonly string _name;
+
+    protected ILogger _logger;
     private readonly Dictionary<string, string> _properties = new(StringComparer.OrdinalIgnoreCase);
 
     private readonly Dictionary<string, FunctionInfo> _functions = new(StringComparer.OrdinalIgnoreCase);
@@ -46,6 +50,7 @@ public abstract class BaseAssistant : IConversationOrchestrator
     public BaseAssistant(string name)
     {
         _name = name;
+        _logger = SemanticOrchestratorLoggerFactory.Create(GetType());
     }
 
     public string Name => _name;
@@ -103,7 +108,7 @@ public abstract class BaseAssistant : IConversationOrchestrator
             throw new ArgumentException($"Function {function} not found");
         }
 
-        Console.WriteLine($"Executing function {function} with parameters: {DumpArguments(arguments)}");
+        _logger.LogInformation("Executing function {Function} with parameters: {Arguments}", function, DumpArguments(arguments));
         var functionInfo = _functions[function];
         return await functionInfo.Function(arguments);
     }

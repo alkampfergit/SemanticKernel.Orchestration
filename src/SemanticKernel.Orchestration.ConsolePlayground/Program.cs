@@ -14,6 +14,8 @@ namespace SemanticKernel.Orchestration.ConsolePlayground;
 
 public static class Program
 {
+    private static Microsoft.Extensions.Logging.ILogger _logger;
+
     static async Task Main(string[] args)
     {
         // Configure Serilog
@@ -27,6 +29,7 @@ public static class Program
                 fileSizeLimitBytes: 20 * 1024 * 1024) // 20MB
             .CreateLogger();
 
+        Log.Logger.Information("Starting the application.");
         IServiceCollection serviceCollection = new ServiceCollection();
 
         // Add Serilog to .NET Core logging pipeline
@@ -115,16 +118,11 @@ public static class Program
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        //var kernelStore = serviceProvider.GetRequiredService<KernelStore>();
-        ////await SimpleChatExampleAsync(kernelStore);
-        //bool shouldExit;
-        //do
-        //{
-        //    using var scope = kernelStore.StartContainerScope();
-        //    var compressedConversation = new TokenLimitedConversation(kernelStore, "gpt4omini", 2000);
-        //    shouldExit = await SimpleChatExampleAsync(kernelStore, compressedConversation);
-        //} while (!shouldExit);
+        var loggerFactory = serviceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
+        SemanticOrchestratorLoggerFactory.Init(loggerFactory);
 
+        _logger = loggerFactory.CreateLogger(typeof (Program));
+        _logger.LogInformation("Starting main functionalities.");
         //orchestrator example
         var userQuestionManager = serviceProvider.GetRequiredService<IUserQuestionManager>();
         var example = await userQuestionManager.AskForSelectionAsync("Which example you want to run?", ["Math", "Video", "SQL"]);
