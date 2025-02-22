@@ -26,6 +26,10 @@
       <PackageReference Include="Microsoft.SemanticKernel.Abstractions" />
       <PackageReference Include="Microsoft.SemanticKernel.Core" />
       <PackageReference Include="NCalcAsync" />
+      <PackageReference Include="Serilog" />
+      <PackageReference Include="Serilog.AspNetCore" />
+      <PackageReference Include="Serilog.Sinks.Console" />
+      <PackageReference Include="Serilog.Sinks.File" />
       <PackageReference Include="Spectre.Console" />
       <PackageReference Include="System.Configuration.ConfigurationManager" />
     </ItemGroup>
@@ -33,6 +37,10 @@
   <ItemGroup>
     <ProjectReference Include="..\SemanticKernel.Orchestration.SampleAgents\SemanticKernel.Orchestration.SampleAgents.csproj" />
     <ProjectReference Include="..\SemanticKernel.Orchestration\SemanticKernel.Orchestration.csproj" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
 </Project>

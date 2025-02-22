@@ -17,13 +17,15 @@ public class SqlServerSchemaAssistant : BaseAssistant, IConversationOrchestrator
         RegisterFunctionDelegate(
              "GetDatabaseList",
              KernelFunctionFactory.CreateFromMethod(GetDatabaseList),
-             async (_) => await GetDatabaseList());
+             async (_) => await GetDatabaseList(),
+             canExecute: (_) => Task.FromResult(_sharedState == null || _sharedState.SchemaState.DataBaseList?.Any() != true));
 
         RegisterFunctionDelegate(
-             "RetrieveTableSchema",
-             KernelFunctionFactory.CreateFromMethod(RetrieveTableSchema),
-             async (args) => await RetrieveTableSchema(
-                 args["databaseName"].ToString()!));
+             "RetrieveDatabaseSchema",
+             KernelFunctionFactory.CreateFromMethod(RetrieveDatabaseSchema),
+             async (args) => await RetrieveDatabaseSchema(
+                 args["databaseName"].ToString()!),
+             canExecute: (_) => Task.FromResult(_sharedState == null || _sharedState.SchemaRetrievedForAllDataBases));
 
         RegisterFunctionDelegate(
             "GetTableSchemaRepresentation",
@@ -92,9 +94,15 @@ SCHEMA:
     }
 
     [Description("Query the database for table schema if you didn't already loaded")]
-    public async Task<AssistantResponse> RetrieveTableSchema(
+    public async Task<AssistantResponse> RetrieveDatabaseSchema(
         [Description("Name of the database")] string databaseName)
     {
+        if (_sharedState.SchemaState.DatabaseSchema.ContainsKey(databaseName))
+        {
+            //ok that is a typical loop, where the language model does not understand that we already 
+            //have the schema of this database.
+        }
+
         DatabaseSchema databaseSchema = InnerGetDatabaseSchema(databaseName);
         return new AssistantResponse("retrieved list of tables.", databaseSchema);
     }
@@ -143,41 +151,6 @@ SCHEMA:
         databaseSchema = new(tables);
         _sharedState.SchemaState.DatabaseSchema[databaseName] = databaseSchema;
         return databaseSchema;
-    }
-
-    public class SqlServerSchemaAssistantState
-    {
-        public IReadOnlyCollection<string> DataBaseList { get; set; }
-
-        /// <summary>
-        /// Database information
-        /// </summary>
-        public Dictionary<string, DatabaseSchema> DatabaseSchema { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-
-        public string ToPromptFact()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            if (DataBaseList != null)
-            {
-                sb.AppendLine("Database list:");
-                foreach (var db in DataBaseList)
-                {
-                    sb.AppendLine($"{db}");
-                }
-
-                if (DatabaseSchema.Count > 0)
-                {
-                    sb.AppendLine("\nI already retrieved schema for the following databases. If you need to know the schema call GetTableSchemaRepresentation");
-                    foreach (var dbinfo in DatabaseSchema)
-                    {
-                        sb.Append(dbinfo.Key);
-                    }
-                }
-            }
-
-            return sb.ToString();
-        }
     }
 
     public record DatabaseSchema(IReadOnlyCollection<TableInfo> Tables)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -18,12 +19,16 @@ public class AssistantBasedOrchestrator : IConversationOrchestrator
 {
     private const string DefaultModelName = "gpt4omini";
     private readonly KernelStore _kernelStore;
+    private readonly ILogger<AssistantBasedOrchestrator> _logger;
     private readonly List<BaseAssistant> _assistants;
     private readonly List<(BaseAssistant Assistant, AssistantResponse Response)> _responses = new();
 
-    public AssistantBasedOrchestrator(KernelStore kernelStore)
+    public AssistantBasedOrchestrator(
+        KernelStore kernelStore,
+        ILogger<AssistantBasedOrchestrator> logger)
     {
         _kernelStore = kernelStore;
+        _logger = logger;
         _assistants = new List<BaseAssistant>();
         //Add some default assistants
         AddAssistant(new AnswerAssistant(_assistants));
@@ -84,7 +89,8 @@ public class AssistantBasedOrchestrator : IConversationOrchestrator
 
             foreach (var assistant in _assistants)
             {
-                foreach (var function in assistant.GetFunctions())
+                var assistantFunctions = await assistant.GetFunctionsAsync(cancellationToken);
+                foreach (var function in assistantFunctions)
                 {
                     functions.Add(function.KernelFunction);
                     assistantMap[function.KernelFunction.Name] = assistant;
@@ -111,13 +117,20 @@ public class AssistantBasedOrchestrator : IConversationOrchestrator
 
             //ChatMessageContent result = await PerformCallWithChatModel(question, kernel, settings, cancellationToken);
             ChatMessageContent result = await PerformCallWithSimplePromptModel(question, kernel, settings, cancellationToken);
-          
-            var response = result.Items.OfType<FunctionCallContent>().SingleOrDefault();
-            if (response == null)
+
+            var functionResponses = result.Items.OfType<FunctionCallContent>().ToList();
+            if (functionResponses.Count == 0)
             {
                 return result.ToString();
             }
 
+            if (functionResponses.Count > 1)
+            {
+                //What? we have morf
+                _logger.LogError("We have more than on function Response {count} - Functions are: {functions}", functionResponses.Count, String.Join(",", functionResponses.Select(f => f.FunctionName)));
+            }
+
+            var response = functionResponses.First();
             var assistantToCall = assistantMap[response.FunctionName];
             var assistantFunctionCallResult = await assistantToCall.ExecuteFunctionAsync(response.FunctionName, response.Arguments);
             _responses.Add((assistantToCall, assistantFunctionCallResult));
