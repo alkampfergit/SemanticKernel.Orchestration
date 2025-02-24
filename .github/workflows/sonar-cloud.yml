@@ -91,9 +91,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
           SQL_SERVER_TEST_CONNECTION: 'Server=localhost,1433;Database=Northwind;User Id=sa;Password=PPAssw00rrd;Encrypt=True;TrustServerCertificate=True'     
         shell: pwsh
+        
         run: |
           dotnet tool run dotnet-sonarscanner begin /k:"alkampfergit_SemanticKernel.Orchestration" /o:"alkampfergit-github" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          
-          ./build.ps1
+
+          dotnet build src
           
           dotnet tool run dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
