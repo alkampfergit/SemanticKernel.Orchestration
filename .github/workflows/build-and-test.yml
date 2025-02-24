@@ -1,0 +1,80 @@
+name: BuildAndPublish
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - feature/*
+      - hotfix/*
+      - release/*
+  pull_request: 
+
+permissions:
+  id-token: write
+  contents: read
+  attestations: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: PPAssw00rrd
+        ports:
+          - 1433:1433
+       
+    steps:
+      
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Download Northwind Script
+        run: |
+          curl -o instnwnd.sql https://raw.githubusercontent.com/microsoft/sql-server-samples/master/samples/databases/northwind-pubs/instnwnd.sql
+
+      - name: Install SQL Tools
+        run: |
+          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+          curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+          sudo apt-get update
+          sudo apt-get install mssql-tools unixodbc-dev -y
+
+      - name: Initialize Northwind Database
+        run: |
+          /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -P PPAssw00rrd -Q "CREATE DATABASE Northwind"
+          /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -P PPAssw00rrd -d Northwind -i instnwnd.sql
+
+      - name: Setup dotnet 3
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+
+      - name: Setup dotnet 8
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 9.x
+
+      - name: build and publish
+        shell: pwsh
+        env:
+          SQL_SERVER_TEST_CONNECTION: 'Server=localhost,1433;Database=Northwind;User Id=sa;Password=PPAssw00rrd;Encrypt=True;TrustServerCertificate=True'
+        run: |
+          ./build.ps1 -nugetPublish $false
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: 'artifacts/NuGet'
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts/NuGet

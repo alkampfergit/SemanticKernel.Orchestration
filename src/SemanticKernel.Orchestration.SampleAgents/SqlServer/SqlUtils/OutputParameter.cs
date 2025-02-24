@@ -1,15 +1,16 @@
-﻿namespace SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils
-{
-    internal class OutputParameter
-    {
-        public object Value { get; set; }
-        public string Name { get; set; }
-        public Type Type { get; set; }
+﻿namespace SemanticKernel.Orchestration.SampleAgents.SqlServer.SqlUtils;
 
-        public OutputParameter(string name, Type type)
-        {
-            Name = name;
-            Type = type;
-        }
+#nullable disable
+
+internal class OutputParameter
+{
+    public object Value { get; set; }
+    public string Name { get; set; }
+    public Type Type { get; set; }
+
+    public OutputParameter(string name, Type type)
+    {
+        Name = name;
+        Type = type;
     }
 }
