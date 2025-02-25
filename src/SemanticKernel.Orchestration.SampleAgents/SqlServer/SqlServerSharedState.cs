@@ -74,7 +74,7 @@ public class SqlServerSchemaAssistantState
         }
 
         if (allDatabaseHasSchema)
-        { 
+        {
             sb.AppendLine("All database schema are retrieved");
         }
         return sb.ToString();

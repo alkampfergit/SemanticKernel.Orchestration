@@ -1,13 +1,12 @@
 ﻿using Microsoft.SemanticKernel;
 using OfficeOpenXml;
+using SemanticKernel.Orchestration.Assistants;
 using SemanticKernel.Orchestration.Orchestrators;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 
-namespace SemanticKernel.Orchestration.Assistants.BaseAssistants;
+namespace SemanticKernel.Orchestration.SampleAgents.Common;
 
 public class ExcelAssistant : BaseAssistant
 {
