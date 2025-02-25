@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Console Tests (External Terminal)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/tests/SemanticKernel.Orchestration.ConsolePlayground/bin/Debug/net9.0/SemanticKernel.Orchestration.ConsolePlayground.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/tests/SemanticKernel.Orchestration.ConsolePlayground",
+            "console": "externalTerminal",
+            "stopAtEntry": false
+        }
+    ]
+}

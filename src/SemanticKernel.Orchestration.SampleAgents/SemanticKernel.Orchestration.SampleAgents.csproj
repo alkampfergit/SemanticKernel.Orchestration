@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Alkampfer.KernelMemory.Extensions" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.KernelMemory.AI.AzureOpenAI" />
+    <PackageReference Include="Microsoft.KernelMemory.Core" />
+    <PackageReference Include="System.Drawing.Common" />
+    <PackageReference Include="EPPlus" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SemanticKernel.Orchestration\SemanticKernel.Orchestration.csproj" />
+  </ItemGroup>
+
+</Project>

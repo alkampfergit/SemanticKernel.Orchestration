@@ -1,0 +1,46 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Alkampfer.KernelMemory.Extensions" Version="0.8.0" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.2.0" />
+    <PackageVersion Include="EPPlus" Version="5.8.14" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.2.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.KernelMemory.AI.AzureOpenAI" Version="0.97.250211.1" />
+    <PackageVersion Include="Microsoft.KernelMemory.AI.OpenAI" Version="0.97.250211.1" />
+    <PackageVersion Include="Microsoft.KernelMemory.Core" Version="0.97.250211.1" />
+    <PackageVersion Include="Microsoft.ML.Tokenizers" Version="1.0.1" />
+    <PackageVersion Include="Microsoft.ML.Tokenizers.Data.Cl100kBase" Version="1.0.1" />
+    <PackageVersion Include="Microsoft.ML.Tokenizers.Data.Gpt2" Version="1.0.1" />
+    <PackageVersion Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="1.0.1" />
+    <PackageVersion Include="Microsoft.ML.Tokenizers.Data.P50kBase" Version="1.0.1" />
+    <PackageVersion Include="Microsoft.ML.Tokenizers.Data.R50kBase" Version="1.0.1" />
+    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.39.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.PromptTemplates.Handlebars" Version="1.39.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Yaml" Version="1.39.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Abstractions" Version="1.39.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Core" Version="1.39.0" />
+    <PackageVersion Include="NCalcAsync" Version="5.4.1" />
+    <PackageVersion Include="Serilog" Version="4.2.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageVersion Include="Spectre.Console" Version="0.49.1" />
+    <PackageVersion Include="System.Configuration.ConfigurationManager" Version="9.0.2" />
+    <PackageVersion Include="fasterflect" Version="3.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
+    <PackageVersion Include="System.Drawing.Common" Version="9.0.2" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="FluentAssertions" Version="8.1.1" />
+  </ItemGroup>
+</Project>
