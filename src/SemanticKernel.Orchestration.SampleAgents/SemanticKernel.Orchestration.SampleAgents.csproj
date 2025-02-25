@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Alkampfer.KernelMemory.Extensions" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.KernelMemory.AI.AzureOpenAI" />
+    <PackageReference Include="Microsoft.KernelMemory.Core" />
+    <PackageReference Include="System.Drawing.Common" />
+    <PackageReference Include="EPPlus" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SemanticKernel.Orchestration\SemanticKernel.Orchestration.csproj" />

@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using System.IO;
 using SemanticKernel.Orchestration.Assistants;
-using SemanticKernel.Orchestration.Assistants.BaseAssistants;
 using SemanticKernel.Orchestration.ConsolePlayground.SampleAgentsDemo;
 using SemanticKernel.Orchestration.Helpers;
 using SemanticKernel.Orchestration.Orchestrators;
 using SemanticKernel.Orchestration.SampleAgents.AudioVideo;
+using SemanticKernel.Orchestration.SampleAgents.Common;
 using SemanticKernel.Orchestration.SampleAgents.SqlServer;
+using Serilog;
 
 namespace SemanticKernel.Orchestration.ConsolePlayground;
 
@@ -121,7 +120,7 @@ public static class Program
         var loggerFactory = serviceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
         SemanticOrchestratorLoggerFactory.Init(loggerFactory);
 
-        _logger = loggerFactory.CreateLogger(typeof (Program));
+        _logger = loggerFactory.CreateLogger(typeof(Program));
         _logger.LogInformation("Starting main functionalities.");
         //orchestrator example
         var userQuestionManager = serviceProvider.GetRequiredService<IUserQuestionManager>();

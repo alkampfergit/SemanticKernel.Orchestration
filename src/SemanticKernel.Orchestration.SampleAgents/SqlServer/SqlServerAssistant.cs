@@ -20,7 +20,6 @@ namespace SemanticKernel.Orchestration.SampleAgents.SqlServer;
 public class SqlServerAssistant : BaseAssistant
 {
     private readonly KernelStore _kernelStore;
-    private readonly ILogger<SqlServerAssistant> _logger;
     private readonly SqlServerSchemaAssistant _sqlServerSchemaAssistant;
     private readonly SqlServerQueryExecutor _sqlServerQueryExecutor;
     private readonly SqlServerSharedState _sharedState;
@@ -32,13 +31,11 @@ public class SqlServerAssistant : BaseAssistant
        IUserQuestionManager userQuestionManager,
        KernelStore kernelStore,
        SqlServerConfiguration sqlServerConfiguration,
-       ILogger<SqlServerAssistant> logger,  
        [FromKeyedServices("sql")] SqlServerSchemaAssistant sqlServerSchemaAssistant,
        [FromKeyedServices("sql")] SqlServerQueryExecutor sqlServerQueryExecutor) : base("SqlServerAssistant")
     {
         _sharedState = new SqlServerSharedState();
         _kernelStore = kernelStore;
-        _logger = logger;
         _sqlServerSchemaAssistant = sqlServerSchemaAssistant;
         _sqlServerQueryExecutor = sqlServerQueryExecutor;
         _subAssistants["schema"] = sqlServerSchemaAssistant;
