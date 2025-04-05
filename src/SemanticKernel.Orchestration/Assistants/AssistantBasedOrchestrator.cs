@@ -80,15 +80,51 @@ public class AssistantBasedOrchestrator : IConversationOrchestrator
 
     public async Task<string> AskAsync(string question, CancellationToken cancellationToken = default)
     {
-        var containerScope = KernelStore.GetActiveContainer();
-        if (containerScope == null)
+        var conversationContext = KernelStore.GetActiveConversationContext();
+        if (conversationContext == null)
         {
             throw new InvalidOperationException("No active container found");
         }
-        containerScope.AddWrapper(new CallLimiterTool(40));
-        
+        conversationContext.AddWrapper(new CallLimiterTool(40));
+
         while (true)
         {
+            if (conversationContext.CurrentAgentPendingQuestion != null)
+            {
+                var assistant = conversationContext.CurrentAgentPendingQuestion.Assistant;
+                //we have a question to ask the user, we set this information in the context then simply return the question to the user.
+                var assistantAnswer = await conversationContext.AnswerQuestion(question, cancellationToken);
+
+                //after answering the question usually we simply start and continue on the main cycle, but the assistant can ansser
+                //with a final answer or another question.
+                if (assistantAnswer != null)
+                {
+                    if (assistantAnswer.TerminateCycle)
+                    {
+                        //ok the assistant want to finish the conversation
+                        return assistantAnswer.State is string s ? s : assistantAnswer.Result;
+                    }
+
+                    _responses.Add((assistant, assistantAnswer));
+
+                    //ok the assistant want to ask a question, we set this information in the context then simply return the question to the user.
+                    if (assistantAnswer.IsUserQuestion)
+                    {
+                        conversationContext.SetAgentQuestion(assistantAnswer.Result, assistant);
+                        return assistantAnswer.Result;
+                    }
+
+                    if (assistantAnswer.TerminateCycle)
+                    {
+                        return assistantAnswer.State is string s ? s : assistantAnswer.Result;
+                    }
+                }
+
+                //if we reach here simply continue the conversation.
+            }
+
+            //First of all set the question in the context.
+            conversationContext.CurrentUserQuestion = question;
             var kernel = _kernelStore.GetKernel(DefaultModelName);
 
             //ok I need to get all the functions for all the assistants
@@ -130,6 +166,7 @@ public class AssistantBasedOrchestrator : IConversationOrchestrator
             var functionResponses = result.Items.OfType<FunctionCallContent>().ToList();
             if (functionResponses.Count == 0)
             {
+                //ok the LLM answered the question there is no agent to call.
                 return result.ToString();
             }
 
@@ -142,12 +179,22 @@ public class AssistantBasedOrchestrator : IConversationOrchestrator
             var response = functionResponses.First();
             var assistantToCall = assistantMap[response.FunctionName];
             var assistantFunctionCallResult = await assistantToCall.ExecuteFunctionAsync(response.FunctionName, response.Arguments);
+
             _responses.Add((assistantToCall, assistantFunctionCallResult));
 
             if (finalFunctions.Contains(response.FunctionName))
             {
                 return assistantFunctionCallResult.Result;
             }
+
+            //ok the assistant want to ask a question, we set this information in the context then simply return the question to the user.
+            if (assistantFunctionCallResult.IsUserQuestion)
+            {
+                conversationContext.SetAgentQuestion(assistantFunctionCallResult.Result, assistantToCall);
+                return assistantFunctionCallResult.Result;
+            }
+
+            //We have a question to ask the user
 
             if (assistantFunctionCallResult.TerminateCycle)
             {

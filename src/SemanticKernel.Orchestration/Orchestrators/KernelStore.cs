@@ -39,7 +39,7 @@ public class KernelStore
 {
     private readonly Dictionary<string, KernelInfo> _kernels = new();
     private readonly IServiceProvider _serviceProvider;
-    private static AsyncLocal<InterceptorContainer?> _currentContainer = new();
+    private static AsyncLocal<ConversationContext?> _currentConversationContext = new();
 
     public KernelStore(IServiceProvider serviceProvider)
     {
@@ -145,29 +145,47 @@ public class KernelStore
         }
     }
 
-    public InterceptorContainer StartContainerScope()
+    /// <summary>
+    /// Create a container scope that will be used to create a discussion with the orchestrator
+    /// that continue on the same thread scope. This is useful only for directed connected client
+    /// where we enter in a simple loop of question/answer until we exit.
+    /// </summary>
+    /// <returns></returns>
+    public ConversationContext StartConversationContext()
     {
         var interceptors = _serviceProvider.GetServices<IChatInterceptorTool>().ToArray();
         var wrappers = _serviceProvider.GetServices<IChatWrappingTool>().ToArray();
 
-        var container = new InterceptorContainer(interceptors, wrappers);
-        _currentContainer.Value = container;
+        var container = new ConversationContext(interceptors, wrappers);
+        _currentConversationContext.Value = container;
         return container;
     }
 
-    public static InterceptorContainer? GetActiveContainer()
+    /// <summary>
+    /// When we have a disconnected client we usually store the orchestrator 
+    /// somewhere then we do not know when another request will come, in this
+    /// situation we usually store the interceptor container somewhere and we
+    /// will dispose when the communication ends.
+    /// </summary>
+    /// <param name="container"></param>
+    public void SetConversationContext(ConversationContext container)
     {
-        return _currentContainer.Value;
+        _currentConversationContext.Value = container;
     }
 
-    internal static void ClearContainer()
+    public static ConversationContext? GetActiveConversationContext()
     {
-        _currentContainer.Value = null;
+        return _currentConversationContext.Value;
+    }
+
+    internal static void ClearConversationContext()
+    {
+        _currentConversationContext.Value = null;
     }
 
     public static void SetProperty(string propertyName, object value)
     {
-        var container = _currentContainer.Value;
+        var container = _currentConversationContext.Value;
         if (container == null)
         {
             //TODO: Log
@@ -179,7 +197,7 @@ public class KernelStore
 
     public static IReadOnlyCollection<(string Key, T Value)> GetAllPropertyValues<T>() where T : class
     {
-        var container = _currentContainer.Value;
+        var container = _currentConversationContext.Value;
         if (container == null)
         {
             return Array.Empty<(string, T)>();
@@ -193,7 +211,7 @@ public class KernelStore
 
     public T? GetInterceptor<T>() where T : class
     {
-        var container = _currentContainer.Value;
+        var container = _currentConversationContext.Value;
         if (container == null)
         {
             return null;

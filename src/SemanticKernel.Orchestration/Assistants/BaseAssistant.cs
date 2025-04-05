@@ -151,4 +151,14 @@ public abstract class BaseAssistant : IConversationOrchestrator
     {
         return _properties.TryGetValue(propertyName, out var value) ? value : null;
     }
+
+    /// <summary>
+    /// Each assistant can ask a question to the user, this method is called when the user answer
+    /// and the assistant can process the answer continuing the conversation.
+    /// </summary>
+    /// <param name="answer"></param>
+    public virtual Task<AssistantResponse?> AnswerQuestion(string answer, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult<AssistantResponse?>(null);
+    }
 }

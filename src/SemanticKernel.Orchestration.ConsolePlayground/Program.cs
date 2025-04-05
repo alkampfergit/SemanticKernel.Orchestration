@@ -106,6 +106,18 @@ public static class Program
             return abo;
         });
 
+        //joke agent
+        serviceCollection.AddKeyedTransient<AssistantThatAskQuestion>("joke");
+        serviceCollection.AddKeyedTransient("joke", (sp, key) =>
+        {
+            var abo = new AssistantBasedOrchestrator(
+                sp.GetRequiredService<KernelStore>(),
+                sp.GetRequiredService<ILogger<AssistantBasedOrchestrator>>());
+            var jokeAssistant = sp.GetRequiredKeyedService<AssistantThatAskQuestion>("joke");
+            abo.AddAssistant(jokeAssistant);
+            return abo;
+        });
+
         //serviceCollection.AddKeyedTransient("sql", (sp, key) =>
         //{
         //    var abo = new AssistantBasedOrchestrator(sp.GetRequiredService<KernelStore>());
@@ -124,7 +136,7 @@ public static class Program
         _logger.LogInformation("Starting main functionalities.");
         //orchestrator example
         var userQuestionManager = serviceProvider.GetRequiredService<IHumanInTheLoop>();
-        var example = await userQuestionManager.AskForSelectionAsync("Which example you want to run?", ["Math", "Video", "SQL"]);
+        var example = await userQuestionManager.AskForSelectionAsync("Which example you want to run?", ["Math", "Video", "SQL", "Joke"]);
 
         if (example == "Math")
         {
@@ -137,6 +149,17 @@ public static class Program
         else if (example == "SQL")
         {
             await SqlExampleAsync(serviceProvider);
+        }
+        else if (example == "Joke")
+        {
+            var orchestrator = serviceProvider.GetRequiredKeyedService<AssistantBasedOrchestrator>("joke");
+            var kernelStore = serviceProvider.GetRequiredService<KernelStore>();
+            await BasicOrchestratorCycle(orchestrator, kernelStore);
+        }
+        else if (example == "Chat")
+        {
+            var kernelStore = serviceProvider.GetRequiredService<KernelStore>();
+            await SimpleChatExampleAsync(kernelStore);
         }
         else
         {
@@ -172,7 +195,7 @@ public static class Program
 
     private static async Task BasicOrchestratorCycle(AssistantBasedOrchestrator orchestrator, KernelStore kernelStore)
     {
-        using var scope = kernelStore.StartContainerScope();
+        using var scope = kernelStore.StartConversationContext();
         while (true)
         {
             var tokenUsageCounter = kernelStore.GetInterceptor<TokenUsageCounter>();
@@ -211,7 +234,7 @@ public static class Program
     {
         var orchestrator = serviceProvider.GetRequiredService<AssistantBasedOrchestrator>();
         var kernelStore = serviceProvider.GetRequiredService<KernelStore>();
-        using var scope = kernelStore.StartContainerScope();
+        using var scope = kernelStore.StartConversationContext();
         while (true)
         {
             Console.Write("\nAsk a question (press Enter or type 'exit' to quit): ");

@@ -32,7 +32,7 @@ public class IChatCompletionServiceInterceptor : IChatCompletionService
         Kernel? kernel = null,
         CancellationToken cancellationToken = default)
     {
-        var container = KernelStore.GetActiveContainer();
+        var container = KernelStore.GetActiveConversationContext();
 
         // Check all constructor-injected wrappers first
         foreach (var wrapper in _wrappers)
