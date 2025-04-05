@@ -66,7 +66,7 @@ jobs:
         env:
           SQL_SERVER_TEST_CONNECTION: 'Server=localhost,1433;Database=Northwind;User Id=sa;Password=PPAssw00rrd;Encrypt=True;TrustServerCertificate=True'
         run: |
-          ./build.ps1 -nugetPublish $false
+          ./build.ps1 -nugetPublish $true -nugetApiKey ${{ secrets.NUGET_API_KEY }} 
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
