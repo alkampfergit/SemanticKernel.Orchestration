@@ -14,7 +14,7 @@ namespace SemanticKernel.Orchestration.Orchestrators;
 /// </summary>
 public class KernelInfo
 {
-    private Kernel _kernel;
+    private Kernel? _kernel;
 
     public KernelInfo(IKernelBuilder builder, ModelInformation modelName, string description, string name)
     {
@@ -29,6 +29,9 @@ public class KernelInfo
     public string Description { get; }
     public string Name { get; }
 
+    /// <summary>
+    /// Lazy build of the kernel object
+    /// </summary>
     public Kernel Kernel => _kernel ??= Builder.Build();
 }
 

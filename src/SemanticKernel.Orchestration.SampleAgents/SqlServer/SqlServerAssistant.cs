@@ -15,7 +15,8 @@ namespace SemanticKernel.Orchestration.SampleAgents.SqlServer;
 
 /// <summary>
 /// This is a complex assistant, that uses other assistants to perform some
-/// work.
+/// work. We need to explore the scenario where a complex assistant is an 
+/// orchestrator, or, even better, remove completely the concept of orchestrator
 /// </summary>
 public class SqlServerAssistant : BaseAssistant
 {
@@ -28,7 +29,7 @@ public class SqlServerAssistant : BaseAssistant
     private Dictionary<string, BaseAssistant> _subAssistants = new(StringComparer.OrdinalIgnoreCase);
 
     public SqlServerAssistant(
-       IUserQuestionManager userQuestionManager,
+       IHumanInTheLoop userQuestionManager,
        KernelStore kernelStore,
        SqlServerConfiguration sqlServerConfiguration,
        [FromKeyedServices("sql")] SqlServerSchemaAssistant sqlServerSchemaAssistant,

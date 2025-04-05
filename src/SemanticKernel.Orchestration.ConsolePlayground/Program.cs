@@ -70,7 +70,7 @@ public static class Program
             return abo;
         });
 
-        serviceCollection.AddSingleton<IUserQuestionManager, ConsoleUserQuestionManager>();
+        serviceCollection.AddSingleton<IHumanInTheLoop, ConsoleBasedHumanInteraction>();
 
         serviceCollection.AddKeyedTransient<SummaryAssistant>("audiovideo");
 
@@ -123,7 +123,7 @@ public static class Program
         _logger = loggerFactory.CreateLogger(typeof(Program));
         _logger.LogInformation("Starting main functionalities.");
         //orchestrator example
-        var userQuestionManager = serviceProvider.GetRequiredService<IUserQuestionManager>();
+        var userQuestionManager = serviceProvider.GetRequiredService<IHumanInTheLoop>();
         var example = await userQuestionManager.AskForSelectionAsync("Which example you want to run?", ["Math", "Video", "SQL"]);
 
         if (example == "Math")

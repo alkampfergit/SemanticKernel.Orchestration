@@ -55,6 +55,9 @@ public abstract class BaseAssistant : IConversationOrchestrator
 
     public string Name => _name;
 
+    /// <summary>
+    /// Add the ability to inject a prompt in the conversation.
+    /// </summary>
     public virtual string InjectedPrompt => string.Empty;
 
     /// <summary>
@@ -135,7 +138,8 @@ public abstract class BaseAssistant : IConversationOrchestrator
 
     protected void SetGlobalProperty(string propertyName, string value)
     {
-        _orchestrator.AddProperty(propertyName, value);
+        //I can set a global property only if the orchestrator is set
+        _orchestrator?.AddProperty(propertyName, value);
     }
 
     public void AddProperty(string propertyName, string value)

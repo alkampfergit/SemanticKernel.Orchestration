@@ -1,10 +1,14 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 
 namespace SemanticKernel.Orchestration.Configuration;
 
+/// <summary>
+/// Simple configurator for the Semantic Kernel, this class needs to be
+/// refactored, actually it is used mainly for testing purposes
+/// TODO: Move on testing project
+/// </summary>
 public class SemanticKernelConfigurator
 {
     public static IKernelBuilder CreateBasicKernelBuilderGpt4o(bool withLogging = false)

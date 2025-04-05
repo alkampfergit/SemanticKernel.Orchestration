@@ -15,6 +15,11 @@ using System.Threading.Tasks;
 
 namespace SemanticKernel.Orchestration.Assistants;
 
+/// <summary>
+/// TODO: Not sure if an orchestrator should be an assistant or not. Probably an assistant
+/// can be a simple assistant or have other sub assistants and use various strategies to
+/// orchestrate them. this will make the orchestrator a simple version of an assistant.
+/// </summary>
 public class AssistantBasedOrchestrator : IConversationOrchestrator
 {
     private const string DefaultModelName = "gpt4omini";
@@ -76,6 +81,10 @@ public class AssistantBasedOrchestrator : IConversationOrchestrator
     public async Task<string> AskAsync(string question, CancellationToken cancellationToken = default)
     {
         var containerScope = KernelStore.GetActiveContainer();
+        if (containerScope == null)
+        {
+            throw new InvalidOperationException("No active container found");
+        }
         containerScope.AddWrapper(new CallLimiterTool(40));
         
         while (true)

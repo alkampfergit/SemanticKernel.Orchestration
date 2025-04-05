@@ -6,7 +6,7 @@ using Spectre.Console;
 
 namespace SemanticKernel.Orchestration.Helpers;
 
-public class ConsoleUserQuestionManager : IUserQuestionManager
+public class ConsoleBasedHumanInteraction : IHumanInTheLoop
 {
     public Task<string> AskQuestionAsync(string question)
     {
@@ -24,5 +24,11 @@ public class ConsoleUserQuestionManager : IUserQuestionManager
                 .AddChoices(options.ToArray()));
 
         return Task.FromResult(sample);
+    }
+
+    public Task<string> WriteStatusAsync(string message)
+    {
+        Console.WriteLine(message);
+        return Task.FromResult(message);
     }
 }

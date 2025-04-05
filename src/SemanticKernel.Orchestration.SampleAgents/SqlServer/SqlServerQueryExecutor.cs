@@ -15,7 +15,7 @@ public class SqlServerQueryExecutor : BaseAssistant, IConversationOrchestrator
 
     public SqlServerQueryExecutor(
         KernelStore kernelStore,
-        IUserQuestionManager userQuestionManager) : base("SqlServerSchemaAssistant")
+        IHumanInTheLoop userQuestionManager) : base("SqlServerSchemaAssistant")
     {
         RegisterFunctionDelegate(
              "ExecuteQuery",
@@ -35,7 +35,7 @@ public class SqlServerQueryExecutor : BaseAssistant, IConversationOrchestrator
 
     private readonly SqlServerQueryExecutorState _state = new();
     private readonly KernelStore _kernelStore;
-    private readonly IUserQuestionManager _userQuestionManager;
+    private readonly IHumanInTheLoop _userQuestionManager;
 
     [Description("Query the database for table schema if you didn't already loaded")]
     public async Task<AssistantResponse> ExecuteQuery(
