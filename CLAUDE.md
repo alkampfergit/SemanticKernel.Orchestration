@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - Always comments interfaces, in classes use the inherits doc when needed.
 - Try to write unit test for all modification if possible and if you do not need to change too many thing for testing, unless the user asked explicitly to refactor for testing.
+- Verify that the code compile correctly and pass all tests before considering a task done
 
 ## Development Commands
 
