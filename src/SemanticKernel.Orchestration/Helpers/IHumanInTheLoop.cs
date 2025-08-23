@@ -34,6 +34,15 @@ public interface IHumanInTheLoop
     /// <param name="options"></param>
     /// <returns></returns>
     Task<string> AskForSelectionAsync(string prompt, IEnumerable<string> options);
+
+    /// <summary>
+    /// Asks the user to select multiple options from a list of options and returns the selected options.
+    /// This is useful for any scenario where the user needs to make multiple choices from a set of options.
+    /// </summary>
+    /// <param name="prompt"></param>
+    /// <param name="options"></param>
+    /// <returns>A collection of selected options</returns>
+    Task<IEnumerable<string>> AskForMultiSelectionAsync(string prompt, IEnumerable<string> options);
 }
 
 

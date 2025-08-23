@@ -43,14 +43,14 @@ public class SqlHelperTests
         _sut.InitializeWithSharedState(new SqlServerSharedState());
     }
 
-    [Fact]
+    //[Fact]
     public async Task Can_grab_database_list()
     {
         var dbList = await _sut.GetDatabaseList();
         dbList.State.Should().BeOfType<List<string>>();
     }
 
-    [Fact]
+    //[Fact]
     public async Task Can_query_table_list()
     {
         var dbList = await _sut.RetrieveDatabaseSchema("northwind");

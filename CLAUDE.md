@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## General rules
+
+- Always comments interfaces, in classes use the inherits doc when needed.
+- Try to write unit test for all modification if possible and if you do not need to change too many thing for testing, unless the user asked explicitly to refactor for testing.
+
 ## Development Commands
 
 ### Building and Testing
